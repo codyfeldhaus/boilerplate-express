@@ -30,6 +30,9 @@ function(req, res) {
 //use res.sendFile(), which requires an absolute path
 //absolutePath = __dirname + relativePath/file.ext
 
+//LOGGER MUST BE CALLED AT BEGINNING
+app.use(loggerMiddleware);
+
 const pathToIndex = __dirname + "/views/index.html";
 app.get("/", (req, res) => res.sendFile(pathToIndex));
 
@@ -55,10 +58,37 @@ app.get("/json", (req, res) => {
     "name": name,
     "age": age
   }
-  
+
   res.json(jsonObj)
 });
 
+app.get("/users/:username", authenticationMiddleware, (req, res) => {
+  const username = req.params.username;
+  res.send(`Hello, ${username}!`);
+})
+
+/////TUESDAY START HERE////////
+
+//middleware logger
+//log message to console for every request
+//format: "{method} {path} - {ip}" ex: GET /json - ::ffff:127.0.0.1
+//can use req.method, req.path, and req.ip 
+
+function loggerMiddleware(req, res, next) {
+  console.log(`${req.method} request made to ${req.url}`);
+  console.log(`${req.method} ${req.path} - ${req.ip}`);
+  next();
+}
+
+//middleware authenticator
+function authenticationMiddleware(req, res, next) {
+  const token = req.header('Authorization');
+  if (5 === 5) {
+    next();
+  } else {
+    res.status(401).send('Unauthorized');
+  }
+}
 
 module.exports = app;
 

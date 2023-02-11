@@ -109,6 +109,60 @@ app.get("/users/:username", authenticationMiddleware, (req, res) => {
   res.send(`Hello, ${username}!`);
 } )
 
+//use a middleware function to find the current date and time 
+//when a get request is made to the route /now
+//and send the time as a json object in the response
+
+// app.get(
+//   "/now", 
+//   (req, res, next) => {
+//     req.time = new Date().toString();
+//     next();
+//   }, 
+//   (req, res) => {
+//     res.json({time: req.time});
+//   }
+// );
+
+app.get(
+  "/now", 
+  timeMiddleware, 
+  (req, res) => {
+    res.json({time: req.time});
+  }
+);
+
+//Get route parameter input
+//path example: /user/:userId/book/:bookId -> /user/codydf/book/3412
+//req.params: {userId: 'codydf', bookId: '3412'}
+
+//handle GET request to the route /:word/echo -> /collaborate/echo
+//respond with a json object {echo: word}
+app.get("/:word/echo", (req, res) => res.json({echo: req.params.word}))
+
+//handle GET request to the route /user/:userId/book/:bookId
+//send both params in the response as a json object
+app.get("/user/:userID/book/:bookID", (req, res) => {
+  res.json({
+    user: req.params.userID, 
+    book: req.params.bookID
+  });
+})
+
+
+//Get query parameter input
+//route: /name
+//actual url entered: /name?first=Cody&middle=Douglas&last=Feldhaus
+//? signifies when the query parameters start
+//& signifies an additional query parameter
+
+app.get("/name", (req, res) => {
+  res.json({
+    name: `${req.query.first} ${req.query.middle.charAt(0)} ${req.query.last}`
+  });
+})
+
+
 //middleware syntax
 /*
 
@@ -141,8 +195,9 @@ function authenticationMiddleware(req, res, next) {
   }
 }
 
-
-
+function timeMiddleware(req, res, next) {
+  req.time = new Date().toString();
+  next();
+}
 
 module.exports = app;
-

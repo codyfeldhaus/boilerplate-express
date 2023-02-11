@@ -2,8 +2,13 @@ let express = require('express'); //similar to importing React
 let app = express();
 require('dotenv').config() //loads environment variables
 
+let bodyParser = require('body-parser');
+
 console.log("Hello World");
 console.log(process.env.MENU_API_KEY);
+
+//chaining multiple request handlers to same route:
+//app.route(path).get(handler).post(handler)
 
 //Syntax for routes in Express
 //app.METHOD(PATH, HANDLER)
@@ -67,6 +72,23 @@ app.get("/users/:username", authenticationMiddleware, (req, res) => {
   res.send(`Hello, ${username}!`);
 })
 
+//time server
+app.get("/now", addCurrentTimeMiddleware, (req, res) => {
+  res.json({time: req.time});
+})
+
+//request parameters
+app.get("/:word/echo", (req, res) => {
+  res.json({echo: req.params.word})
+})
+
+//query parameter
+app.get("/name", (req, res) => {
+  res.json({name: `${req.query.first} ${req.query.last}`});
+})
+
+
+
 /////TUESDAY START HERE////////
 
 //middleware logger
@@ -88,6 +110,12 @@ function authenticationMiddleware(req, res, next) {
   } else {
     res.status(401).send('Unauthorized');
   }
+}
+
+//addCurrentTimeMiddleware
+function addCurrentTimeMiddleware(req, res, next) {
+  req.time = new Date().toString()
+  next();
 }
 
 module.exports = app;

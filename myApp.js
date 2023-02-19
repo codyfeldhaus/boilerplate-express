@@ -2,6 +2,8 @@ let express = require('express'); //similar to importing React
 let app = express();
 require('dotenv').config() //loads environment variables
 
+// let bodyParser = require('body-parser');
+
 console.log("Hello World");
 console.log(process.env.MENU_API_KEY);
 console.log(process.env.BG_COLOR);
@@ -34,6 +36,9 @@ function(req, res) {
 //want middleware to log regardless of request method
 //need this to come first because it should apply to all requests
 app.use(logMiddleware)
+
+//request parsing middleware
+app.use(express.urlencoded({extended: false}));
 
 //serve static assets with app.use() and express.static()
 //examples of static assets: css stylesheets, javascript scripts, images, etc.
